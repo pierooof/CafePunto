@@ -27,6 +27,7 @@ final class BaristaController
 
         return View::page('barista/dashboard', [
             'title' => 'Panel',
+            'isAdmin' => (int) Auth::user()['is_admin'] === 1,
             'scripts' => ['scan.js'],
             'stampsToday' => $log->stampsSince($now->setTime(0, 0)),
             'redeemsMonth' => $log->redeemsSince($now->modify('first day of this month')->setTime(0, 0)),

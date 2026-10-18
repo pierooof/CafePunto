@@ -11,3 +11,10 @@ document.querySelectorAll('[data-pw-toggle]').forEach((btn) => {
         input.focus();
     });
 });
+
+// Formularios con data-confirm piden confirmación antes de enviarse.
+document.querySelectorAll('form[data-confirm]').forEach((form) => {
+    form.addEventListener('submit', (e) => {
+        if (!window.confirm(form.dataset.confirm)) e.preventDefault();
+    });
+});

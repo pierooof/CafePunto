@@ -4,23 +4,15 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Core\Database;
 use App\Models\StampLog;
 use App\Models\UserRepository;
 use App\Services\LoyaltyException;
 use App\Services\LoyaltyService;
 use App\Services\Migrator;
 use DateTimeImmutable;
-use PDO;
-use PHPUnit\Framework\TestCase;
 
-/**
- * Test de integración contra MySQL real. Se salta si no hay TEST_MYSQL_URL.
- * ¡Borra y recrea las tablas de esa base de datos! Usa una base desechable.
- */
-final class LoyaltyServiceTest extends TestCase
+final class LoyaltyServiceTest extends DatabaseTestCase
 {
-    private PDO $pdo;
     private LoyaltyService $loyalty;
     private UserRepository $users;
     private int $barista;
@@ -28,19 +20,7 @@ final class LoyaltyServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $url = getenv('TEST_MYSQL_URL') ?: ($_ENV['TEST_MYSQL_URL'] ?? '');
-        if ($url === '') {
-            $this->markTestSkipped('Define TEST_MYSQL_URL para ejecutar los tests con MySQL.');
-        }
-        $s = Database::settings($url);
-        $this->pdo = Database::open($s['dsn'], $s['user'], $s['password']);
-        $this->pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
-        foreach (['stamp_log', 'users', 'schema_migrations'] as $table) {
-            $this->pdo->exec("DROP TABLE IF EXISTS $table");
-        }
-        $this->pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
-        (new Migrator($this->pdo, dirname(__DIR__) . '/db/migrations'))->run();
-
+        parent::setUp();
         $this->users = new UserRepository($this->pdo);
         $this->loyalty = new LoyaltyService($this->pdo);
         $this->barista = $this->users->create('Barista', '600000001', 'x', 'barista');
@@ -109,6 +89,28 @@ final class LoyaltyServiceTest extends TestCase
         $this->assertSame('Cliente', $top[0]['name']);
         $this->assertSame(12, (int) $top[0]['total_stamps']);
         $this->assertSame(1, (int) $top[0]['redeems']);
+    }
+
+    public function testBaristasAreListedAdminsFirstAndCanBeDeleted(): void
+    {
+        $admin = $this->users->create('Zoe', '600000010', 'x', 'barista', null, true);
+        $names = array_column($this->users->baristas(), 'name');
+        $this->assertSame(['Zoe', 'Barista'], $names);
+
+        $this->assertTrue($this->users->deleteBarista($admin));
+        $this->assertFalse($this->users->deleteBarista($admin));
+        // deleteBarista nunca borra clientes
+        $this->assertFalse($this->users->deleteBarista($this->customer));
+    }
+
+    public function testDeletingABaristaKeepsTheCustomerHistory(): void
+    {
+        $this->loyalty->addStamps($this->customer, $this->barista, 2);
+        $this->users->deleteBarista($this->barista);
+
+        $history = (new StampLog($this->pdo))->history($this->customer);
+        $this->assertCount(1, $history);
+        $this->assertNull($history[0]['staff_name']);
     }
 
     public function testSearchByPhoneAndName(): void

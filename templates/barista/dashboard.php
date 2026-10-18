@@ -49,3 +49,7 @@
         </ol>
     <?php endif; ?>
 </section>
+
+<?php if ($isAdmin): ?>
+    <a class="btn btn-outline btn-block team-link" href="/barista/team">Gestionar equipo</a>
+<?php endif; ?>

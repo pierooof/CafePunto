@@ -12,6 +12,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\View;
 use App\Models\UserRepository;
+use App\Services\LoginThrottle;
 use PDOException;
 
 final class AuthController
@@ -31,11 +32,27 @@ final class AuthController
     public function login(Request $request, array $params): Response
     {
         $phone = Phone::normalize($request->input('phone'));
+        $key = $phone ?? 'invalid';
+        $throttle = new LoginThrottle(Database::connect());
+
+        // Con el límite superado ni siquiera se comprueba la contraseña.
+        $wait = $throttle->retryAfter($request->ip(), $key);
+        if ($wait > 0) {
+            $minutes = (int) ceil($wait / 60);
+            return $this->loginPage(
+                'Demasiados intentos fallidos. Vuelve a intentarlo en ' . $minutes . ($minutes === 1 ? ' minuto.' : ' minutos.'),
+                $request->input('phone'),
+                429,
+            )->withHeaders(['Retry-After' => (string) $wait]);
+        }
+
         $user = $phone === null ? null : Auth::attempt($phone, (string) ($request->post['password'] ?? ''));
         if ($user === null) {
+            $throttle->recordFailure($request->ip(), $key);
             return $this->loginPage('Teléfono o contraseña incorrectos.', $request->input('phone'));
         }
 
+        $throttle->clear($key);
         Auth::login($user);
         $intended = (string) ($_SESSION['intended'] ?? '');
         unset($_SESSION['intended']);
@@ -99,13 +116,13 @@ final class AuthController
         return Response::redirect('/login');
     }
 
-    private function loginPage(?string $error = null, string $phone = ''): Response
+    private function loginPage(?string $error = null, string $phone = '', int $status = 422): Response
     {
         return View::page('auth/login', [
             'title' => 'Entrar',
             'error' => $error,
             'phone' => $phone,
             'demoHint' => Config::flag('DEMO_HINT'),
-        ], $error === null ? 200 : 422);
+        ], $error === null ? 200 : $status);
     }
 }

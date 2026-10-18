@@ -241,6 +241,24 @@ input:focus { border-color: var(--caramel); outline: none; }
 .results a { grid-template-columns: 1fr; }
 .empty { margin-top: 1rem; }
 
+/* ---- Equipo -------------------------------------------------------------- */
+
+.team { list-style: none; margin: .75rem 0 0; padding: 0; }
+.team li { display: grid; grid-template-columns: 1fr auto auto; gap: .6rem; align-items: center; padding: .75rem 0; border-top: 1px solid var(--latte); }
+.team li:first-child { border-top: 0; }
+.team form { margin: 0; }
+.team-info { display: grid; min-width: 0; }
+.team-info strong { overflow: hidden; text-overflow: ellipsis; }
+.team-meta { font-size: .85rem; color: var(--espresso-soft); }
+.team-tags { display: flex; gap: .3rem; }
+.badge { padding: .15rem .55rem; font-size: .7rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: var(--caramel-dark); border-radius: 999px; }
+.badge-soft { color: var(--espresso); background: var(--latte); }
+.btn-danger { color: var(--berry); background: transparent; border-color: var(--berry); }
+.btn-danger:hover { color: #fff; background: var(--berry); }
+.check { display: flex; align-items: center; gap: .6rem; font-weight: 700; }
+.check input { width: 22px; min-height: 22px; height: 22px; accent-color: var(--caramel); }
+.team-link { margin-bottom: 1rem; }
+
 /* ---- Escáner QR ---------------------------------------------------------- */
 
 .scanner {

@@ -69,6 +69,10 @@ final class App
             return Response::redirect('/login');
         }
 
+        // 'admin' = barista con permiso para gestionar el equipo.
+        if ($role === 'admin') {
+            return $user['role'] === 'barista' && (int) $user['is_admin'] === 1 ? null : Response::redirect(Auth::home($user));
+        }
         if ($role !== 'auth' && $user['role'] !== $role) {
             return Response::redirect(Auth::home($user));
         }

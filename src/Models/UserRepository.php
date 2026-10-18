@@ -34,20 +34,34 @@ final class UserRepository
         return $this->one('SELECT * FROM users WHERE qr_token = ?', [$token]);
     }
 
-    public function create(string $name, string $phone, string $passwordHash, string $role, ?DateTimeImmutable $at = null): int
+    public function create(string $name, string $phone, string $passwordHash, string $role, ?DateTimeImmutable $at = null, bool $isAdmin = false): int
     {
         $stmt = $this->pdo->prepare(
-            'INSERT INTO users (name, phone, password_hash, role, qr_token, created_at) VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO users (name, phone, password_hash, role, is_admin, qr_token, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $name,
             $phone,
             $passwordHash,
             $role,
+            (int) $isAdmin,
             bin2hex(random_bytes(16)),
             ($at ?? Config::now())->format('Y-m-d H:i:s'),
         ]);
         return (int) $this->pdo->lastInsertId();
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function baristas(): array
+    {
+        return $this->pdo->query("SELECT * FROM users WHERE role = 'barista' ORDER BY is_admin DESC, name")->fetchAll();
+    }
+
+    public function deleteBarista(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = ? AND role = 'barista'");
+        $stmt->execute([$id]);
+        return $stmt->rowCount() === 1;
     }
 
     /**

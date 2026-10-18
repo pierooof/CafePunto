@@ -6,6 +6,7 @@ use App\Controllers\AuthController;
 use App\Controllers\BaristaController;
 use App\Controllers\CustomerController;
 use App\Controllers\HealthController;
+use App\Controllers\TeamController;
 use App\Core\App;
 use App\Core\Request;
 use App\Core\Router;
@@ -38,5 +39,9 @@ $router->get('/barista/search', [BaristaController::class, 'search'], 'barista')
 $router->get('/barista/customers/{id}', [BaristaController::class, 'show'], 'barista');
 $router->post('/barista/customers/{id}/stamps', [BaristaController::class, 'stamp'], 'barista');
 $router->post('/barista/customers/{id}/redeem', [BaristaController::class, 'redeem'], 'barista');
+
+$router->get('/barista/team', [TeamController::class, 'index'], 'admin');
+$router->post('/barista/team', [TeamController::class, 'create'], 'admin');
+$router->post('/barista/team/{id}/delete', [TeamController::class, 'delete'], 'admin');
 
 (new App($router))->handle(Request::fromGlobals())->send();
