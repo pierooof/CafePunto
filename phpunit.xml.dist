@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache">
+    <testsuites>
+        <testsuite name="CaféPunto">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <!-- Para los tests de integración, apunta a una base de datos VACÍA y desechable:
+             TEST_MYSQL_URL=mysql://root:root@127.0.0.1:3306/cafepunto_test -->
+        <env name="APP_ENV" value="development"/>
+    </php>
+</phpunit>
