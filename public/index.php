@@ -6,6 +6,7 @@ use App\Controllers\AuthController;
 use App\Controllers\BaristaController;
 use App\Controllers\CustomerController;
 use App\Controllers\HealthController;
+use App\Controllers\IconController;
 use App\Controllers\TeamController;
 use App\Core\App;
 use App\Core\Request;
@@ -23,6 +24,7 @@ require dirname(__DIR__) . '/src/bootstrap.php';
 
 $router = new Router();
 $router->get('/health', [HealthController::class, 'show'], 'open');
+$router->get('/touch-icon', [IconController::class, 'touchIcon'], 'open');
 
 $router->get('/', [AuthController::class, 'home']);
 $router->get('/login', [AuthController::class, 'showLogin']);
