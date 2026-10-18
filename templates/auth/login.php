@@ -12,10 +12,7 @@
             <span>Teléfono</span>
             <input type="tel" name="phone" value="<?= e($phone) ?>" inputmode="tel" autocomplete="tel" placeholder="600 123 456" required autofocus>
         </label>
-        <label class="field">
-            <span>Contraseña</span>
-            <input type="password" name="password" autocomplete="current-password" required>
-        </label>
+        <?php $id = 'password'; $autocomplete = 'current-password'; require __DIR__ . '/../partials/password_field.php'; ?>
         <button class="btn btn-primary btn-block" type="submit">Entrar</button>
     </form>
 

@@ -14,11 +14,13 @@
             <input type="tel" name="phone" value="<?= e($old['phone'] ?? '') ?>" inputmode="tel" autocomplete="tel" placeholder="600 123 456" required>
             <?php if (isset($errors['phone'])): ?><small><?= e($errors['phone']) ?></small><?php endif; ?>
         </label>
-        <label class="field <?= isset($errors['password']) ? 'has-error' : '' ?>">
-            <span>Contraseña</span>
-            <input type="password" name="password" autocomplete="new-password" minlength="8" required>
-            <?php if (isset($errors['password'])): ?><small><?= e($errors['password']) ?></small><?php endif; ?>
-        </label>
+        <?php
+        $id = 'password';
+        $autocomplete = 'new-password';
+        $fieldError = $errors['password'] ?? null;
+        $hint = 'Mínimo 8 caracteres. Pulsa el ojo para comprobar lo que escribes.';
+        require __DIR__ . '/../partials/password_field.php';
+        ?>
         <button class="btn btn-primary btn-block" type="submit">Crear mi tarjeta</button>
     </form>
 

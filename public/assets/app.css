@@ -114,6 +114,20 @@ input {
 }
 input:focus { border-color: var(--caramel); outline: none; }
 .field small { color: var(--berry); font-weight: 700; }
+.field small.hint { color: var(--espresso-soft); font-weight: 600; }
+
+/* Campo de contraseña con botón mostrar/ocultar */
+.pw { position: relative; }
+.pw input { padding-right: 3.4rem; }
+.pw-toggle {
+    position: absolute; top: 50%; right: .3rem; transform: translateY(-50%);
+    display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
+    color: var(--espresso-soft); background: none; border: 0; border-radius: 10px; cursor: pointer;
+}
+.pw-toggle[hidden] { display: none; }
+.pw-toggle:hover { color: var(--espresso); background: var(--latte); }
+.pw-toggle:focus-visible { outline: 3px solid rgb(200 128 58 / 55%); }
+.pw-toggle[aria-pressed="false"] .i-hide, .pw-toggle[aria-pressed="true"] .i-show { display: none; }
 .has-error input { border-color: var(--berry); }
 
 .search { display: flex; gap: .5rem; margin: .75rem 0; }
