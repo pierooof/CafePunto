@@ -31,6 +31,8 @@ final class ManifestTest extends TestCase
 
     public function testAppleTouchIconIsOpaqueAndAtTheSiteRoot(): void
     {
+        // La URL del <link> y la de la raíz (la que iOS prueba por defecto) deben existir.
+        $this->assertFileExists(dirname(__DIR__) . '/public/assets/icons/touch-icon-180-v2.png');
         $path = dirname(__DIR__) . '/public/apple-touch-icon.png';
         $this->assertFileExists($path);
         [$w, $h, $type] = getimagesize($path);
