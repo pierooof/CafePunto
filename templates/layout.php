@@ -16,8 +16,8 @@ $flash = Session::pullFlash();
     <title><?= e($title ?? 'CaféPunto') ?> · CaféPunto</title>
     <meta name="description" content="Tarjeta de fidelización digital para cafeterías: suma sellos y canjea tu bebida gratis.">
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/favicon.ico" sizes="48x48">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+    <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32-v2.png">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" sizes="180x180" href="/touch-icon">
     <meta name="mobile-web-app-capable" content="yes">
