@@ -63,4 +63,11 @@ final class CoreTest extends TestCase
         $this->assertNull($router->match('GET', '/barista/customers/42/extra'));
         $this->assertNotNull($router->match('POST', '/barista/customers/7/stamps'));
     }
+
+    public function testQrIsGeneratedAsSvgDataUri(): void
+    {
+        $uri = \App\Services\QrService::svgDataUri('https://cafe.pierooof.dev/c/abc123');
+        $this->assertStringStartsWith('data:image/svg+xml;base64,', $uri);
+        $this->assertStringContainsString('<svg', base64_decode(substr($uri, strlen('data:image/svg+xml;base64,'))));
+    }
 }

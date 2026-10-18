@@ -20,10 +20,6 @@ final class QrService
             'eccLevel' => EccLevel::M,
             'drawLightModules' => false,
             'svgPreserveAspectRatio' => 'xMidYMid',
-            'moduleValues' => [
-                // Módulos oscuros en marrón espresso en vez de negro puro.
-                QRCode::DATA_DARK => '#3b2314',
-            ],
         ]);
         return (new QRCode($options))->render($text);
     }
