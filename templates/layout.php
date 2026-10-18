@@ -15,10 +15,9 @@ $flash = Session::pullFlash();
     <script src="<?= e(asset('theme.js')) ?>"></script>
     <title><?= e($title ?? 'CaféPunto') ?> · CaféPunto</title>
     <meta name="description" content="Tarjeta de fidelización digital para cafeterías: suma sellos y canjea tu bebida gratis.">
-    <?php // iOS usa el icono y las metas de Apple; con manifest, Safari reciente ignora el icono y pone una letra. ?>
-    <?php if (!preg_match('/iPhone|iPad|iPod/', $_SERVER['HTTP_USER_AGENT'] ?? '')): ?>
     <link rel="manifest" href="/manifest.json">
-    <?php endif; ?>
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" sizes="180x180" href="/touch-icon">
     <meta name="mobile-web-app-capable" content="yes">
