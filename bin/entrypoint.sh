@@ -10,6 +10,10 @@ if [ "$SEED_DEMO" = "true" ]; then
     php bin/seed.php
 fi
 
+# mod_php necesita el MPM prefork: Apache no arranca si hay otro MPM habilitado.
+rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/mpm_worker.*
+a2enmod mpm_prefork >/dev/null
+
 # Si la configuración de Apache no es válida, deja en el log qué la rompe.
 if ! apache2ctl configtest; then
     echo "--- mods-enabled (mpm):"; ls -la /etc/apache2/mods-enabled | grep -i mpm || true
