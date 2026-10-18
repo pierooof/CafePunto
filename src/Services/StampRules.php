@@ -20,8 +20,7 @@ final class StampRules
             throw new LoyaltyException('La tarjeta está completa: toca canjear la bebida gratis.');
         }
         if ($current + $amount > self::GOAL) {
-            $missing = self::GOAL - $current;
-            throw new LoyaltyException("Solo faltan $missing sellos para completar la tarjeta.");
+            throw new LoyaltyException('Solo ' . self::missing(self::GOAL - $current) . ' para completar la tarjeta.');
         }
         return $current + $amount;
     }
@@ -30,9 +29,14 @@ final class StampRules
     public static function redeem(int $current): int
     {
         if ($current < self::GOAL) {
-            $missing = self::GOAL - $current;
-            throw new LoyaltyException("Aún faltan $missing sellos para poder canjear.");
+            throw new LoyaltyException('Aún ' . self::missing(self::GOAL - $current) . ' para poder canjear.');
         }
         return $current - self::GOAL;
+    }
+
+    /** "falta 1 sello" / "faltan 3 sellos" */
+    private static function missing(int $n): string
+    {
+        return $n === 1 ? 'falta 1 sello' : "faltan $n sellos";
     }
 }

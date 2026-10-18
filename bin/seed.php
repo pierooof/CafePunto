@@ -78,6 +78,11 @@ foreach ($customers as [$name, $phone, $age, $visits, $password]) {
             $balance = $loyalty->addStamps($id, $staffId, $amount, $at);
         }
     }
+
+    // El cliente demo debe tener la tarjeta a medias para que se vea algo al entrar.
+    if ($phone === DEMO_CUSTOMER_PHONE && $balance < 7) {
+        $loyalty->addStamps($id, $baristaId, 7 - $balance, $now->modify('-1 hour'));
+    }
 }
 
 printf("Datos demo creados. Barista: %s / %s · Cliente: %s / %s\n", DEMO_BARISTA_PHONE, DEMO_BARISTA_PASSWORD, DEMO_CUSTOMER_PHONE, DEMO_CUSTOMER_PASSWORD);
