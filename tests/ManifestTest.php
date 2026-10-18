@@ -28,4 +28,14 @@ final class ManifestTest extends TestCase
         $this->assertContains('512x512 any', $sizes);
         $this->assertContains('512x512 maskable', $sizes);
     }
+
+    public function testAppleTouchIconIsOpaqueAndAtTheSiteRoot(): void
+    {
+        $path = dirname(__DIR__) . '/public/apple-touch-icon.png';
+        $this->assertFileExists($path);
+        [$w, $h, $type] = getimagesize($path);
+        $this->assertSame([180, 180, IMAGETYPE_PNG], [$w, $h, $type]);
+        // Byte 25 del PNG = tipo de color; 2 = RGB sin canal alfa.
+        $this->assertSame(2, ord((string) file_get_contents($path, false, null, 25, 1)));
+    }
 }

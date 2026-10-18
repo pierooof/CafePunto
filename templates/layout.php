@@ -17,7 +17,7 @@ $flash = Session::pullFlash();
     <meta name="description" content="Tarjeta de fidelización digital para cafeterías: suma sellos y canjea tu bebida gratis.">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="CaféPunto">
