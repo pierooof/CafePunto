@@ -8,11 +8,37 @@ Proyecto de portafolio: PHP 8.3 sin framework (MVC propio), MySQL 8 y despliegue
 
 ## Capturas
 
-<!-- Sustituye cada hueco por una imagen en docs/ y enlázala, p. ej. ![Tarjeta](docs/tarjeta.png) -->
+Todas en formato móvil (390 px), que es el uso real detrás de la barra.
 
-| Tarjeta del cliente | Panel del barista | Ficha de cliente |
+**Visitante**
+
+| Inicio | Login (claro) | Login (oscuro) |
 | --- | --- | --- |
-| _📷 pendiente: `docs/tarjeta.png`_ | _📷 pendiente: `docs/panel.png`_ | _📷 pendiente: `docs/cliente.png`_ |
+| <img src="docs/screenshots/01-inicio.png" width="240" alt="Pantalla de inicio"> | <img src="docs/screenshots/02-login-claro.png" width="240" alt="Login en modo claro"> | <img src="docs/screenshots/03-login-oscuro.png" width="240" alt="Login en modo oscuro"> |
+
+**Registro y límite de intentos**
+
+| Contraseña visible (ojo) | Login bloqueado tras 5 fallos |
+| --- | --- |
+| <img src="docs/screenshots/04-registro-contrasena-visible.png" width="240" alt="Registro con la contraseña visible"> | <img src="docs/screenshots/05-login-bloqueado.png" width="240" alt="Mensaje de demasiados intentos"> |
+
+**Cliente: tarjeta, QR e historial**
+
+| Claro | Oscuro |
+| --- | --- |
+| <img src="docs/screenshots/06-tarjeta-cliente-claro.png" width="240" alt="Tarjeta del cliente en modo claro"> | <img src="docs/screenshots/07-tarjeta-cliente-oscuro.png" width="240" alt="Tarjeta del cliente en modo oscuro"> |
+
+**Barista: panel y ficha de cliente**
+
+| Panel (claro) | Panel (oscuro) | Ficha de cliente |
+| --- | --- | --- |
+| <img src="docs/screenshots/08-panel-barista-claro.png" width="240" alt="Panel del barista en modo claro"> | <img src="docs/screenshots/09-panel-barista-oscuro.png" width="240" alt="Panel del barista en modo oscuro"> | <img src="docs/screenshots/10-ficha-cliente.png" width="240" alt="Ficha de cliente con botones de sellos"> |
+
+**Administrador: gestión del equipo**
+
+| Claro | Oscuro |
+| --- | --- |
+| <img src="docs/screenshots/11-equipo-claro.png" width="240" alt="Pantalla Equipo en modo claro"> | <img src="docs/screenshots/12-equipo-oscuro.png" width="240" alt="Pantalla Equipo en modo oscuro"> |
 
 ## Funcionalidades
 
@@ -21,6 +47,10 @@ Proyecto de portafolio: PHP 8.3 sin framework (MVC propio), MySQL 8 y despliegue
 - **Barista**: busca al cliente por teléfono (parcial) o nombre, o **escanea su QR** con la cámara; suma 1, 2 o 3 sellos y **canjea la bebida gratis** al llegar a 10.
 - **Panel con estadísticas**: sellos de hoy, canjes del mes, nº de clientes y ranking de los clientes más fieles.
 - **Historial** completo de cada tarjeta (quién sumó cada sello y cuándo).
+- **Equipo**: los baristas con permiso de administrador añaden y eliminan baristas desde el panel.
+- **Modo claro y oscuro** con un botón sol/luna animado; respeta el tema del sistema y recuerda tu elección.
+- **Mostrar/ocultar contraseña** en todos los formularios para evitar erratas en el móvil.
+- **Instalable** como app (manifest + iconos): «Añadir a la pantalla de inicio» en Android y iOS.
 - Diseño cálido de cafetería, pensado para usarse con una mano en el móvil detrás de la barra.
 
 ## Stack
@@ -40,19 +70,20 @@ Proyecto de portafolio: PHP 8.3 sin framework (MVC propio), MySQL 8 y despliegue
 ```
 public/            index.php (front controller) y assets
 src/Core/          Router, Request/Response, Session, CSRF, Config, Proxy, Database…
-src/Controllers/   Auth, Customer, Barista, Health
+src/Controllers/   Auth, Customer, Barista, Team, Health
 src/Models/        UserRepository, StampLog (consultas)
-src/Services/      StampRules (reglas puras), LoyaltyService (transacciones), Migrator, QrService
+src/Services/      StampRules (reglas puras), LoyaltyService (transacciones), LoginThrottle, Migrator, QrService
 templates/         Vistas PHP (todo escapado con e())
 db/migrations/     SQL versionado
-bin/               migrate.php, seed.php, entrypoint.sh
+bin/               migrate.php, seed.php, create-barista.php, entrypoint.sh
 tests/             PHPUnit
 ```
 
 ### Modelo de datos
 
-- `users`: `id, name, phone (único), password_hash, role (barista|customer), qr_token (único), stamps (0–10, con CHECK), created_at`
+- `users`: `id, name, phone (único), password_hash, role (barista|customer), is_admin, qr_token (único), stamps (0–10, con CHECK), created_at`
 - `stamp_log`: `id, customer_id, staff_id, type (stamp|redeem), amount, created_at`
+- `login_attempts`: `id, ip, phone, created_at` (fallos de login recientes, para el límite de intentos)
 
 El saldo vive en `users.stamps` y cada movimiento se registra en `stamp_log`, ambos dentro de una transacción con el cliente bloqueado (`SELECT … FOR UPDATE`), de modo que dos baristas a la vez no pueden pasarse de 10 ni canjear dos veces.
 
@@ -60,6 +91,7 @@ El saldo vive en `users.stamps` y cada movimiento se registra en `stamp_log`, am
 
 - Contraseñas con `password_hash` (bcrypt) y verificación en tiempo constante contra usuarios inexistentes.
 - Consultas parametrizadas (`PDO`, sin emulación de prepares); los comodines de `LIKE` se escapan.
+- **Límite de intentos de login**: 5 fallos por teléfono o 20 por IP en 15 minutos bloquean el acceso (HTTP 429 con `Retry-After`) y ni siquiera se comprueba la contraseña. Un login correcto borra los fallos. La IP es la real del cliente (`CF-Connecting-IP`/`X-Forwarded-For`).
 - Token CSRF en todos los formularios POST.
 - Salida siempre escapada (`e()`), cabeceras seguras: CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` y HSTS en producción.
 - Cookie de sesión `HttpOnly`, `SameSite=Lax` y `Secure` en producción; el id se regenera al iniciar sesión.
@@ -181,6 +213,18 @@ Ejemplo con `cafe.pierooof.dev`:
 - IP real del cliente: si llega `CF-Connecting-IP` se usa esa; si no, se toma `X-Forwarded-For` contando `TRUSTED_PROXIES` saltos desde la derecha, de modo que una cabecera falsificada por el cliente no cuenta.
 - `CF-Connecting-IP` solo es fiable si el tráfico pasa por Cloudflare; accediendo directamente al dominio `*.up.railway.app` un cliente podría falsificarla. Si te importa, desactiva el dominio de Railway cuando uses el propio.
 
+## Gestión del equipo
+
+Solo los baristas **administradores** ven el botón «Gestionar equipo» en el panel y pueden entrar en `/barista/team`: añadir baristas (con o sin permiso de administrador) y eliminarlos. Nadie puede eliminarse a sí mismo, así que siempre queda un administrador.
+
+Los baristas de demostración **no** son administradores a propósito: la demo tiene credenciales públicas y así nadie puede borrar ni crear cuentas reales. El primer administrador se crea por línea de comandos:
+
+```bash
+php bin/create-barista.php --admin "Nombre Apellido" 600123456 "contraseña-de-8+"
+```
+
+En Railway, ejecútalo en la pestaña **Console** del servicio. Sin `--admin` se crea un barista normal. La migración `005` convierte en administradores a los baristas que ya existieran (salvo los dos de la demo).
+
 ## Credenciales demo
 
 Se crean con `SEED_DEMO=true` (o `php bin/seed.php`):
@@ -194,10 +238,12 @@ Además hay otro barista y once clientes con historial de los últimos meses par
 
 ## Mejoras futuras
 
-- Limitar intentos de login (rate limiting) y recuperación de contraseña.
+- Recuperación de contraseña.
 - Sesiones en base de datos para que sobrevivan a los redespliegues.
+- Pase digital para Apple Wallet y Google Wallet (el `qr_token` ya sirve como contenido del pase).
 - Programa configurable por local (nº de sellos, recompensas), multi-sucursal.
 - Anular el último sello (deshacer) y exportar movimientos a CSV.
-- PWA instalable con tarjeta disponible sin conexión.
+- Modo sin conexión (service worker) para la tarjeta.
 - Notificaciones al cliente («te falta 1 sello»).
+- Bloqueo por pareja IP + teléfono, para que un atacante no pueda bloquear a un cliente legítimo.
 - Tests end-to-end del flujo completo.

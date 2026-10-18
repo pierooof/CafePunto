@@ -12,6 +12,7 @@ $flash = Session::pullFlash();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#3b2314">
+    <script src="<?= e(asset('theme.js')) ?>"></script>
     <title><?= e($title ?? 'CaféPunto') ?> · CaféPunto</title>
     <meta name="description" content="Tarjeta de fidelización digital para cafeterías: suma sellos y canjea tu bebida gratis.">
     <link rel="manifest" href="/manifest.json">
@@ -57,13 +58,28 @@ $flash = Session::pullFlash();
         <svg class="icon" width="26" height="26"><use href="#i-cup"/></svg>
         <span>Café<b>Punto</b></span>
     </a>
-    <?php if ($user): ?>
-        <form method="post" action="/logout" class="topbar-user">
-            <?= csrf_field() ?>
-            <span class="who"><?= e(explode(' ', (string) $user['name'])[0]) ?></span>
-            <button class="btn btn-ghost btn-sm" type="submit">Salir</button>
-        </form>
-    <?php endif; ?>
+    <div class="topbar-actions">
+        <button type="button" class="theme-toggle" data-theme-toggle aria-label="Cambiar a modo oscuro" title="Cambiar tema">
+            <svg class="sun" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="4.5" fill="currentColor"/>
+                <g class="sun-rays" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>
+                </g>
+            </svg>
+            <svg class="moon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z" fill="currentColor"/>
+                <circle class="star" cx="18.5" cy="4.5" r="1.1" fill="currentColor"/>
+                <circle class="star" cx="21.2" cy="8.6" r=".8" fill="currentColor"/>
+            </svg>
+        </button>
+        <?php if ($user): ?>
+            <form method="post" action="/logout" class="topbar-user">
+                <?= csrf_field() ?>
+                <span class="who"><?= e(explode(' ', (string) $user['name'])[0]) ?></span>
+                <button class="btn btn-ghost btn-sm" type="submit">Salir</button>
+            </form>
+        <?php endif; ?>
+    </div>
 </header>
 
 <main class="wrap">
