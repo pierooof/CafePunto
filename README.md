@@ -4,7 +4,7 @@ Tarjeta de fidelización digital para cafeterías. El cliente se registra, ense�
 
 Proyecto de portafolio: PHP 8.3 sin framework (MVC propio), MySQL 8 y despliegue con Docker en Railway.
 
-> 🔗 Demo: _pendiente de añadir (por ejemplo `https://cafe.pierooof.dev`)_
+> 🔗 Demo: <https://cafe.pierooof.dev>
 
 ## Capturas
 
