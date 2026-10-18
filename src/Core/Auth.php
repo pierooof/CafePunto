@@ -29,7 +29,7 @@ final class Auth
     {
         $user = (new UserRepository(Database::connect()))->findByPhone($phone);
         // Se verifica siempre contra un hash para que el tiempo no delate si el teléfono existe.
-        $hash = $user['password_hash'] ?? '$2y$10$usesomesillystringforsalt.u0gUq8f9fbdM6Yv7nHcqg5ZKq9iKe';
+        $hash = $user['password_hash'] ?? '$2b$10$BclVfOa168d0sOzqGqChJ.9iPdj1loX8UU0SALq6enYldxcF.6nri';
         return password_verify($password, $hash) && $user !== null ? $user : null;
     }
 
